@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<!-- Basic Setup -->
+	<user_dir>/Users/hendrik_elsner/</user_dir>
+	<titanium_workspace_path>/Users/hendrik_elsner/Documents/Titanium_Studio_Workspace/</titanium_workspace_path>
+	<adb_path>/Applications/android-sdk-macosx/platform-tools/adb</adb_path>
+
+	<!-- For Google Play Store APKs -->
+	<apk_output_path>/Users/hendrik_elsner/Documents/APP_APKs_Android/</apk_output_path>
+	<keystore_path>/Users/hendrik_elsner/Documents/Keys_and_Certs/Android_KEY</keystore_path>
+	<keystore_alias>theKeystoreAlias</keystore_alias>
+	<keystore_pw>theKeystorePW</keystore_pw>
+
+	<!-- For Ad-Hoc IPAs -->
+	<ipa_output_path>/Users/hendrik_elsner/Documents/APP_IPAs_iOS/</ipa_output_path>
+	<distribution_name>"Distribution Name"</distribution_name>
+	<pp_uuid>PP_UUID</pp_uuid>
+</config>
