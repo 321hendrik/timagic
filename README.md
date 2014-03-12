@@ -1,40 +1,46 @@
-TiMagic
-=======
-A Simple UI for automation of the Titanium CLI and ADB
+#TiMagic
 
-To run the precompiled App you need Mac OS X 10.6+ (Because of 64-bit Python).
+A Simple UI for automation of the Titanium CLI and ADB, which bundles the following features:
 
-Get TiMagic
------------
-* Get the command-line version /dist/timagic_console.zip [recommended]
+* Build and install an app (apk, ipa) in parallel to all connected android and iOS devices and Genymotion with a few keystrokes (~2).
+* Quickly install prebuild apps to all connected devices without a detour through iTunes, xCode Organizer or adb-monitor.
+* All build related information is pulled from a one-time config file (xml) and the project's tiapp.xml.
+* Run an app in iOS-Simulator (optionally with a specific iOS-version).
+* Remove an app from all connected devices
+* Use your favourite IDE for app development without sacrificing easy and fast access to Titanium CLI features.
 
-* Get the Mac App from /dist/timagic_app.zip
+##Get TiMagic
+
+* Get the command-line version /dist/timagic_console.zip [ recommended ]
+
+* Get the Mac App from /dist/timagic_app.zip [ Mac OS X 10.6+ (Because of 64-bit Python) ]
 
 * Get the one folder executable from /dist/timagic_one_folder.zip
 
-Setup your Paths
-----------------
+##Setup your Paths
+
 * Console-Version: Edit timagic_settings.xml
 * App-Version: Right click on timagic.app and choose "Show Contents". Edit Contents/MacOS/timagic_settings.xml.
 * Folder-Version: Edit timagic/timagic_settings.xml
 
-General Requirements
---------------------
+##General Requirements
+
+* Currently only tested on MacOS
 * Python 2.7 http://www.python.org/download/releases/2.7/
 * Titanium CLI <= 3.2
 * ADB 1.0.*
 
-Installing IPA to iOS Device
-------------------------------
-For this feature to work, you need to install libimobiledevice-macosx following the installation guide at https://github.com/benvium/libimobiledevice-macosx
+##iOS device featues
 
-Building from Source
---------------------
-Requirements:
+For those to work, you need to install libimobiledevice-macosx following the installation guide at https://github.com/benvium/libimobiledevice-macosx
+
+##Building from Source
+
+###Requirements:
 * Python 2.7 http://www.python.org/download/releases/2.7/
 * PyInstaller 2.1 https://pypi.python.org/pypi/PyInstaller/2.1
 
-Additional requirements for the GUI version:
+###Additional requirements for the GUI version:
 * Qt 4.7.4 http://download.qt-project.org/archive/qt/4.7/
 * PySide 1.1.0 http://qt-project.org/wiki/Get-PySide
 
