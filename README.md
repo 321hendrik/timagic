@@ -1,5 +1,4 @@
 #TiMagic
-
 A Simple UI for automation of the Titanium CLI and ADB, which bundles the following features:
 
 * Build and install (apk, ipa) in parallel to all connected devices and genymotion.
@@ -10,30 +9,24 @@ A Simple UI for automation of the Titanium CLI and ADB, which bundles the follow
 * Use your favourite IDE for app development without sacrificing easy and fast access to Titanium CLI features.
 
 ###Get TiMagic
-
-* Python script : /dist/timagic_console.zip [ recommended ]
-
-* Mac App (Alpha) : /dist/timagic_app.zip [ Mac OS X 10.6+ (Because of 64-bit Python) ]
+* Python script: /dist/timagic_console.zip [ recommended ]
+* Mac App (Alpha): /dist/timagic_app.zip [ Mac OS X 10.6+ (Because of 64-bit Python) ]
 
 ###Setup your Paths
-
 * Console-Version: Edit timagic_settings.xml
 * App-Version: Right click on timagic.app and choose "Show Contents". Edit Contents/MacOS/timagic_settings.xml.
 * Folder-Version: Edit timagic/timagic_settings.xml
 
 ###General Requirements
-
 * Currently only tested on MacOS
 * Python 2.7 http://www.python.org/download/releases/2.7/
 * Titanium CLI <= 3.2
 * ADB 1.0.*
 
 ###iOS device features
-
 For those to work, you need to install libimobiledevice-macosx following the installation guide at https://github.com/benvium/libimobiledevice-macosx
 
 ##Building from Source
-
 ###Requirements:
 * Python 2.7 http://www.python.org/download/releases/2.7/
 * PyInstaller 2.1 https://pypi.python.org/pypi/PyInstaller/2.1
