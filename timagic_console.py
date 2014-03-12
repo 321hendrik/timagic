@@ -5,20 +5,9 @@ __email__ = "321hendrik@gmail.com"
 __version__ = "2.0"
 
 
-import os
-import subprocess
+import os, sys, subprocess
 import xml.dom.minidom as dom
 from multiprocessing import Process
-
-last_choice = ''
-colors = {
-	'yellow' : '\033[93m',
-	'red': '\033[91m',
-	'green': '\033[92m',
-	'blue': '\033[94m',
-	'aqua': '\033[96m',
-	'end': '\033[0m'
-}
 
 def shell_exec(arg):
 	''' takes a string or list of shell commands and executes it '''
@@ -30,6 +19,14 @@ def shell_exec(arg):
 	os.system(command);
 
 def color(color_string, string):
+	colors = {
+		'yellow' : '\033[93m',
+		'red': '\033[91m',
+		'green': '\033[92m',
+		'blue': '\033[94m',
+		'aqua': '\033[96m',
+		'end': '\033[0m'
+	}
 	return colors[color_string] + string + colors['end']
 
 def get_project_names():
@@ -117,8 +114,12 @@ def print_help():
 		print '*' + color('green','todevice') + ('\t'*3) + ': installs ad-hoc IPA from previous build to all connected iOS devices'
 	print '\n\n'
 
+# global vars
+last_choice = ''
+script_path = '/'.join(sys.argv[0].split('/')[0:-1]) + '/'
+
 # get settings from settings file
-config_xml_path = 'timagic_settings.xml'
+config_xml_path = script_path + 'timagic_settings.xml'
 settings = {
 	'user_dir': '',
 	'titanium_workspace_path': '',
@@ -221,7 +222,6 @@ while True:
 					apk_path = settings['apk_output_path'] + app_name_escaped_spaces + '.apk'
 				else:
 					apk_path = app_path +'/build/android/bin/' + (app_name_no_spaces if float(sdk_version[0:3]) >= 3.2 else 'app') + '.apk'
-
 
 				kwargs = { 'app_id': app_id }
 				operation = ''

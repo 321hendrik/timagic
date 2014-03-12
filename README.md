@@ -9,28 +9,26 @@ A Simple UI for automation of the Titanium CLI and ADB, which bundles the follow
 * Remove an app from all connected devices
 * Use your favourite IDE for app development without sacrificing easy and fast access to Titanium CLI features.
 
-##Get TiMagic
+###Get TiMagic
 
-* Get the command-line version /dist/timagic_console.zip [ recommended ]
+* Python script : /dist/timagic_console.zip [ recommended ]
 
-* Get the Mac App from /dist/timagic_app.zip [ Mac OS X 10.6+ (Because of 64-bit Python) ]
+* Mac App (Alpha) : /dist/timagic_app.zip [ Mac OS X 10.6+ (Because of 64-bit Python) ]
 
-* Get the one folder executable from /dist/timagic_one_folder.zip
-
-##Setup your Paths
+###Setup your Paths
 
 * Console-Version: Edit timagic_settings.xml
 * App-Version: Right click on timagic.app and choose "Show Contents". Edit Contents/MacOS/timagic_settings.xml.
 * Folder-Version: Edit timagic/timagic_settings.xml
 
-##General Requirements
+###General Requirements
 
 * Currently only tested on MacOS
 * Python 2.7 http://www.python.org/download/releases/2.7/
 * Titanium CLI <= 3.2
 * ADB 1.0.*
 
-##iOS device featues
+###iOS device features
 
 For those to work, you need to install libimobiledevice-macosx following the installation guide at https://github.com/benvium/libimobiledevice-macosx
 

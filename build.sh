@@ -12,7 +12,6 @@ pyinstaller timagic.spec
 
 # zip the newly build dists
 zip dist/timagic_console.zip timagic_console.py timagic_settings.xml
-zip dist/timagic_one_folder.zip dist/timagic
 zip dist/timagic_app.zip dist/timagic.app
 
 # remove the build folder
