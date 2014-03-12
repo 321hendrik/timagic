@@ -64,13 +64,11 @@ def deploy_apk(**kwargs):
 	install_apk(device_id=kwargs['device_id'], apk_path=kwargs['apk_path'])
 	start_app_activity(device_id=kwargs['device_id'], app_id=kwargs['app_id'], app_name_no_spaces=kwargs['app_name_no_spaces'])
 
-def install_ipa(**kwargs):
-	# @TODO
+def deploy_ipa(**kwargs):
 	print '...trying to install IPA to ' + kwargs['device_id']
 	shell_exec(['ideviceinstaller', '-U', kwargs['device_id'], '-i', kwargs['ipa_path']])
 
 def remove_ipa(**kwargs):
-	# @TODO
 	print '...trying to uninstall IPA from ' + kwargs['device_id']
 	shell_exec(['ideviceinstaller', '-U', kwargs['device_id'], '-u', kwargs['app_id']])
 
@@ -156,7 +154,6 @@ while True:
 	user_input = raw_input(last_choice + ' > ')
 	project_num = ''
 	ios_version = ''
-	parallel_processes = {}
 
 	# print help
 	if str(user_input) == 'h':
@@ -209,74 +206,84 @@ while True:
 		base_command = ['titanium', 'build', '-d', app_path, '-s', sdk_version]
 
 		if input_params in ['', 'build', 'todevice', 'todeviceU', 'remove']:
-			#
-			# handle android platform
-			#
-			if len(android_device_list):
+
+			android_connected = True if len(android_device_list) else False
+			ios_connected = True if len(ios_device_list) else False
+
+			if android_connected or ios_connected:
 				if input_params in ['', 'build']:
-					# default build for android devices
-					print 'building unsigned APK'
-					shell_exec(base_command + ['-p', 'android', '-b'])
+					build_processes = {}
+					if android_connected:
+						# default build for android devices
+						print 'building unsigned APK'
+						build_command_apk = base_command + ['-p', 'android', '-b']
+						build_processes['android'] = Process( target=shell_exec, args=(build_command_apk,) )
 
-				if input_params == 'todevice':
-					apk_path = settings['apk_output_path'] + app_name_escaped_spaces + '.apk'
-				else:
-					apk_path = app_path +'/build/android/bin/' + (app_name_no_spaces if float(sdk_version[0:3]) >= 3.2 else 'app') + '.apk'
+					if ios_connected:
+						# default build for ios devices
+						print 'building ad-hoc IPA'
+						build_command_ipa = base_command + ['-p', 'ios', '-R', settings['distribution_name'], '-I', ios_version, '-P', settings['pp_uuid'], '-O', settings['ipa_output_path'], '-T', 'dist-adhoc']
+						build_processes['ios'] = Process( target=shell_exec, args=(build_command_ipa,) )
 
-				kwargs = { 'app_id': app_id }
-				operation = ''
+					# start parallel builds and wait for them to finish
+					for platform in build_processes:
+						build_processes[platform].start()
+						build_processes[platform].join()
 
+
+				# install to connected devices
+				if android_connected:
+					# get app path
+					if input_params == 'todevice':
+						apk_path = settings['apk_output_path'] + app_name_escaped_spaces + '.apk'
+					else:
+						apk_path = app_path +'/build/android/bin/' + (app_name_no_spaces if float(sdk_version[0:3]) >= 3.2 else 'app') + '.apk'
+
+					android_kwargs = { 'app_id': app_id }
+
+				if ios_connected:
+					# get app path
+					ipa_path = settings['ipa_output_path'] + app_name_escaped_spaces + '.ipa'
+					ios_kwargs = {}
+
+				# remove or install
 				if input_params == 'remove':
 					operation = 'removing from'
-					target = remove_apk
+
+					android_target = remove_apk
+
+					ios_target = remove_ipa
+					ios_kwargs['app_id'] = app_id
 				else:
 					operation = 'installing to'
-					target = deploy_apk
-					kwargs['apk_path'] = apk_path
-					kwargs['app_name_no_spaces'] = app_name_no_spaces
 
+					android_target = deploy_apk
+					android_kwargs['apk_path'] = apk_path
+					android_kwargs['app_name_no_spaces'] = app_name_no_spaces
+
+					ios_target = deploy_ipa
+					ios_kwargs['ipa_path'] = ipa_path
+
+				parallel_install_processes = {}
 				# install the apk to all connected android devices
 				print project_name + ' ' + operation + ' all android devices...'
 				for device_id in android_device_list:
-					kwargs['device_id'] = device_id
-					parallel_processes[device_id] = Process(target=target, kwargs=kwargs)
-					parallel_processes[device_id].start()
-				for device_id in android_device_list:
-					parallel_processes[device_id].join()
-			#
-			# handle ios platform
-			#
-			if len(ios_device_list):
-				if input_params in ['', 'build']:
-					# default build for ios devices
-					print 'building ad-hoc IPA'
-					shell_exec(base_command + ['-p', 'ios', '-R', settings['distribution_name'], '-I', ios_version, '-P', settings['pp_uuid'], '-O', settings['ipa_output_path'], '-T', 'dist-adhoc'])
-
-				ipa_path = settings['ipa_output_path'] + app_name_escaped_spaces + '.ipa'
-
-				print ipa_path
-				kwargs = {}
-				operation = ''
-
-				if input_params == 'remove':
-					operation = 'removing from'
-					target = remove_ipa
-					kwargs['app_id'] = app_id
-				else:
-					operation = 'installing to'
-					target = install_ipa
-					kwargs['ipa_path'] = ipa_path
+					android_kwargs['device_id'] = device_id
+					parallel_install_processes[device_id] = Process(target=android_target, kwargs=android_kwargs)
+					parallel_install_processes[device_id].start()
 
 				# install the ipa to all connected ios devices
 				print project_name + ' ' + operation + ' all iOS devices...'
 				for device_id in ios_device_list:
-					kwargs['device_id'] = device_id
-					parallel_processes[device_id] = Process(target=target, kwargs=kwargs)
-					parallel_processes[device_id].start()
-				for device_id in ios_device_list:
-					parallel_processes[device_id].join()
+					ios_kwargs['device_id'] = device_id
+					parallel_install_processes[device_id] = Process(target=ios_target, kwargs=ios_kwargs)
+					parallel_install_processes[device_id].start()
 
-			if not (len(android_device_list) or len(ios_device_list)):
+				# wait for parallel installation processes to finish
+				for device_id in parallel_install_processes:
+					parallel_install_processes[device_id].join()
+
+			else:
 				notification =  color('red', '\n --> Please connect a device first.\n')
 
 		elif input_params == 'clean':

@@ -26,7 +26,7 @@ A Simple UI for automation of the Titanium CLI and ADB, which bundles the follow
 ###iOS device features
 For those to work, you need to install libimobiledevice-macosx following the installation guide at https://github.com/benvium/libimobiledevice-macosx
 
-##Building from Source
+##Building the GUI version from source
 ###Requirements:
 * Python 2.7 http://www.python.org/download/releases/2.7/
 * PyInstaller 2.1 https://pypi.python.org/pypi/PyInstaller/2.1
