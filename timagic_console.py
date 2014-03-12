@@ -232,6 +232,8 @@ while True:
 
 
 				# install to connected devices
+				apk_path = ''
+				android_kwargs = { 'app_id': app_id }
 				if android_connected:
 					# get app path
 					if input_params == 'todevice':
@@ -239,12 +241,11 @@ while True:
 					else:
 						apk_path = app_path +'/build/android/bin/' + (app_name_no_spaces if float(sdk_version[0:3]) >= 3.2 else 'app') + '.apk'
 
-					android_kwargs = { 'app_id': app_id }
-
+				ipa_path = ''
+				ios_kwargs = {}
 				if ios_connected:
 					# get app path
 					ipa_path = settings['ipa_output_path'] + app_name_escaped_spaces + '.ipa'
-					ios_kwargs = {}
 
 				# remove or install
 				if input_params == 'remove':
@@ -282,7 +283,6 @@ while True:
 				# wait for parallel installation processes to finish
 				for device_id in parallel_install_processes:
 					parallel_install_processes[device_id].join()
-
 			else:
 				notification =  color('red', '\n --> Please connect a device first.\n')
 
