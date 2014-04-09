@@ -115,6 +115,7 @@ def print_help():
 # global vars
 last_choice = ''
 script_path = '/'.join(sys.argv[0].split('/')[0:-1]) + '/'
+script_path = '' if (len(script_path) == 1) else script_path
 
 # get settings from settings file
 config_xml_path = script_path + 'timagic_settings.xml'
@@ -154,6 +155,7 @@ while True:
 	user_input = raw_input(last_choice + ' > ')
 	project_num = ''
 	ios_version = ''
+	newest_ios_version = os.listdir(settings['user_dir'] + 'Library/Application Support/iPhone Simulator/')[-1:][0]
 
 	# print help
 	if str(user_input) == 'h':
@@ -195,7 +197,7 @@ while True:
 		app_name = get_from_xml(tiapp_xml_path, 'name')
 		app_name_escaped_spaces = app_name.replace(' ', '\ ')
 		app_name_no_spaces = app_name.replace(' ', '');
-		ios_version = ios_version or '7.0' # default to iOS-version 7.0
+		ios_version = ios_version or newest_ios_version # default to newest iOS-version
 		app_path = settings['titanium_workspace_path'] + project_name
 
 		# get lists of connected devices
@@ -216,13 +218,13 @@ while True:
 					if android_connected:
 						# default build for android devices
 						print 'building unsigned APK'
-						build_command_apk = base_command + ['-p', 'android', '-b']
+						build_command_apk = base_command + ['--platform', 'android', '-b']
 						build_processes['android'] = Process( target=shell_exec, args=(build_command_apk,) )
 
 					if ios_connected:
 						# default build for ios devices
 						print 'building ad-hoc IPA'
-						build_command_ipa = base_command + ['-p', 'ios', '-R', settings['distribution_name'], '-I', ios_version, '-P', settings['pp_uuid'], '-O', settings['ipa_output_path'], '-T', 'dist-adhoc']
+						build_command_ipa = base_command + ['--platform', 'ios', '-R', settings['distribution_name'], '-I', ios_version, '-P', settings['pp_uuid'], '-O', settings['ipa_output_path'], '-T', 'dist-adhoc']
 						build_processes['ios'] = Process( target=shell_exec, args=(build_command_ipa,) )
 
 					# start parallel builds and wait for them to finish
@@ -290,15 +292,15 @@ while True:
 			shell_exec(['titanium', 'clean', '-d', app_path])
 
 		elif input_params == 'ipa':
-			# build ad-hoc IPA for given iOS-version (e.g. for project number 1 and iOS-version 7.0 --> 1ipa7.0)
+			# build ad-hoc IPA for given iOS-version
 			shell_exec(base_command + ['-p', 'ios', '-R', settings['distribution_name'], '-I', ios_version, '-P', settings['pp_uuid'], '-O', settings['ipa_output_path'], '-T', 'dist-adhoc'])
 
 		elif input_params == 'ipad' or input_params == 'iphone':
-			# Install to and launch given iOS-Simulator (e.g. for project number 1 and iOS-version 7.0 --> 1ipad7.0 or 1iphone7.0)
+			# Install to and launch given iOS-Simulator
 			shell_exec(base_command + ['-p', 'ios', '-I', ios_version, '-Y', input_params, '-S', ios_version, '-T', 'simulator'])
 
 		elif input_params == 'apk':
-			# build Play-Store APK (e.g. for project number 1 --> 1apk)
+			# build Play-Store APK
 			password_flag = ('--store-password' if float(sdk_version[0:3]) >= 3.2 else '--password')
 			shell_exec(base_command + ['-p', 'android', '-K', settings['keystore_path'], '-L', settings['keystore_alias'], password_flag, settings['keystore_pw'], '-O', settings['apk_output_path'], '-T', 'dist-playstore'])
 
