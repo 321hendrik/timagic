@@ -31,7 +31,7 @@ For those to work, you need to install libimobiledevice-macosx following the ins
 * Python 2.7 http://www.python.org/download/releases/2.7/
 * PyInstaller 2.1 https://pypi.python.org/pypi/PyInstaller/2.1
 
-###A dditional requirements for the GUI version:
+### Additional requirements for the GUI version:
 * Qt 4.7.4 http://download.qt-project.org/archive/qt/4.7/
 * PySide 1.1.0 http://qt-project.org/wiki/Get-PySide
 
