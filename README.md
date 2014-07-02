@@ -19,12 +19,16 @@ A Simple UI for automation of the Titanium CLI and ADB, which bundles the follow
 
 ### General Requirements
 * Currently only tested on MacOS
-* Python 2.7 http://www.python.org/download/releases/2.7/
-* Titanium CLI <= 3.2
-* ADB 1.0.*
+* [Python 2.7](http://www.python.org/download/releases/2.7/)
+* [Appcelerator Titanium CLI](https://github.com/appcelerator/titanium) <= 3.2
+* ADB 1.0.* (As part of Appcelerator Titanium)
 
+## Additional Functionality
 ### iOS device features
-For those to work, you need to install libimobiledevice-macosx following the installation guide at https://github.com/benvium/libimobiledevice-macosx
+To use iOS device, you need to install [libimobiledevice-macosx](https://github.com/benvium/libimobiledevice-macosx).
+
+### Microsite Distribution
+To distribute your app (ad-hoc ipa, apk) from a microsite your need the python [qrcode module](https://github.com/lincolnloop/python-qrcode) and some webspace.
 
 ## Building the GUI version from source
 ### Requirements:
