@@ -5,6 +5,7 @@ A Simple UI for automation of the Titanium CLI and ADB, which bundles the follow
 * Quickly install prebuild apps to all connected devices without iTunes, xCode Organizer or adb-monitor.
 * All build related information is pulled from a one-time config file (xml) and the project's tiapp.xml.
 * Run an app in iOS-Simulator (optionally with a specific iOS-version).
+* Distribute your app to iOS and android devices using a generated microsite
 * Remove an app from all connected devices
 * Use your favourite IDE for app development without sacrificing easy and fast access to Titanium CLI features.
 
