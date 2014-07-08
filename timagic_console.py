@@ -412,8 +412,8 @@ def main():
 					# rename app files
 					dist_path += '/'
 					datecode_appname = project_name + '-' + str(get_datecode())
-					shell_exec(['mv', (dist_path + app_name + '.ipa'), (dist_path + datecode_appname + '.ipa')])
-					shell_exec(['mv', (dist_path + app_name + '.apk'), (dist_path + datecode_appname + '.apk')])
+					shell_exec(['mv', (dist_path + app_name_escaped_spaces + '.ipa'), (dist_path + datecode_appname + '.ipa')])
+					shell_exec(['mv', (dist_path + app_name_escaped_spaces + '.apk'), (dist_path + datecode_appname + '.apk')])
 
 				print 'finished generating files for distribution'
 
