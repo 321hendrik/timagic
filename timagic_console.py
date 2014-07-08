@@ -158,11 +158,12 @@ def generate_plist(params):
 
 def generate_microsite(params):
 	''' generates a microsite displaying devices dependent download links '''
-	project_url = params['url'] + '/' + params['project_id']
-	ios_link = project_url + 'manifest.plist'
+	project_url = params['url'] + params['project_id']
+	ios_link = project_url + '/' + 'manifest.plist'
 	android_link = project_url + '/' + params['project_id'] + '-' + params['datecode'] + '.apk'
 
-	html = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"><title>ProReg</title><style type="text/css">body {	background: #666;	margin: 0;	padding: 0;	font-family: verdana,helvetica,sans-serif;	text-align: center;	padding: 10px;	color: #eee;	font-size: 16px;}#container {	width:300px;	margin:0 auto;}h1 {	margin:0;	padding:0;	font-size:14px;}p {	font-size:13px;}.link {	display: none;	background: #555;	border: 1px solid #bbb;	margin-top: .5em;	padding: .3em;}.link a {	text-decoration:none;	font-size:15px;	display:block;	color:#5bb3eb;}.last_updated {	font-size: x-small;	text-align: center;	font-style: italic;}.created_with {	font-size: x-small;	text-align: center;}.created_with a {	color: #aaa;}#no-device-info {	display: none;}</style></head><body><div id="container"><h1>Install Link</h1>'
+	html = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"><title>'
+	html += params['title'] + '</title><style type="text/css">body {	background: #666;	margin: 0;	padding: 0;	font-family: verdana,helvetica,sans-serif;	text-align: center;	padding: 10px;	color: #eee;	font-size: 16px;}#container {	width:300px;	margin:0 auto;}h1 {	margin:0;	padding:0;	font-size:14px;}p {	font-size:13px;}.link {	display: none;	background: #555;	border: 1px solid #bbb;	margin-top: .5em;	padding: .3em;}.link a {	text-decoration:none;	font-size:15px;	display:block;	color:#5bb3eb;}.last_updated {	font-size: x-small;	text-align: center;	font-style: italic;}.created_with {	font-size: x-small;	text-align: center;}.created_with a {	color: #aaa;}#no-device-info {	display: none;}</style></head><body><div id="container"><h1>Install Link</h1>'
 	html += '<div id="ios-link" class="link"><a href="itms-services://?action=download-manifest&url=' + ios_link + '">Tap Here to Install<br />' + params['title'] + '<br />Directly On Your iOS Device</a></div>'
 	html += '<div id="android-link" class="link"><a href="' + android_link + '">Tap Here to Install<br />' + params['title'] + '<br />Directly On Your Android Device</a></div>'
 	html += '<div id="no-device-info"><p>Make sure you are visiting this page on your device, not your computer.<br /></p></div>'
