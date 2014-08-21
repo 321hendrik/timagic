@@ -81,7 +81,9 @@ def install_apk(**kwargs):
 
 def start_app_activity(**kwargs):
 	print '...trying to launch Activity on ' + kwargs['device_id']
-	shell_exec([settings['adb_path'], '-s', kwargs['device_id'], 'shell', 'am', 'start', '-n', (kwargs['app_id'] + '/' + kwargs['app_id'] + '.' + kwargs['app_name_no_spaces'] + 'Activity')])
+	# form activity name
+	activity_name = kwargs['app_name_no_spaces'].lower().title()
+	shell_exec([settings['adb_path'], '-s', kwargs['device_id'], 'shell', 'am', 'start', '-n', (kwargs['app_id'] + '/' + kwargs['app_id'] + '.' + activity_name + 'Activity')])
 
 def deploy_apk(**kwargs):
 	''' installs an apk to all connected adb devices and removes the old version if necessary '''
