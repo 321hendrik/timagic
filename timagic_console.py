@@ -27,11 +27,12 @@ settings = {
 	'distribution_name': '',
 	'pp_uuid': '',
 	'distribution_path': '',
-	'distribution_base_url': ''
+	'distribution_base_url': '',
+	'latest_ios_version': ''
 }
 
 def shell_exec(arg):
-	''' takes a string or list of shell commands and executes it '''
+	''' takes a 'string' or list of shell commands and executes it '''
 	command = ''
 	if type(arg) is list:
 		command = ' '.join(arg)
@@ -245,7 +246,7 @@ def main():
 		user_input = raw_input(last_choice + ' > ')
 		project_num = ''
 		ios_version = ''
-		newest_ios_version = os.listdir(settings['user_dir'] + 'Library/Application Support/iPhone Simulator/')[-1:][0]
+		newest_ios_version = settings['latest_ios_version']
 
 		# print help
 		if str(user_input) == 'h':
