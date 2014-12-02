@@ -78,7 +78,7 @@ def remove_apk(**kwargs):
 
 def install_apk(**kwargs):
 	print '...trying to install APK to ' + kwargs['device_id']
-	shell_exec([settings['adb_path'], '-s', kwargs['device_id'], 'install', kwargs['apk_path']])
+	shell_exec([settings['adb_path'], '-s', kwargs['device_id'], 'install', '-r', kwargs['apk_path']])
 
 def start_app_activity(**kwargs):
 	print '...trying to launch Activity on ' + kwargs['device_id']
@@ -88,7 +88,6 @@ def start_app_activity(**kwargs):
 
 def deploy_apk(**kwargs):
 	''' installs an apk to all connected adb devices and removes the old version if necessary '''
-	remove_apk(device_id=kwargs['device_id'],app_id=kwargs['app_id'])
 	install_apk(device_id=kwargs['device_id'], apk_path=kwargs['apk_path'])
 	start_app_activity(device_id=kwargs['device_id'], app_id=kwargs['app_id'], app_name_no_spaces=kwargs['app_name_no_spaces'])
 
@@ -200,7 +199,7 @@ def distribute(project_id, bundle_id, bundle_version, title):
 		'bundle_version': bundle_version,
 		'title': title,
 		'show_github_link': False,
-		'date': time.strftime('%d.%m.%Y'),
+		'date': time.strftime('%d.%m.%Y %H:%M Uhr'),
 	}
 
 	# create distribute directory for files
@@ -294,7 +293,12 @@ def main():
 
 			# get lists of connected devices
 			android_device_list = subprocess.check_output(settings['adb_path'] + ' devices | grep device', shell=True).replace('\tdevice','').split('\n')[1:-1]
-			ios_device_list = subprocess.check_output('idevice_id -l', shell=True).split('\n')[0:-1] if has_libimobiledevice else []
+
+			# libimobiledevice bug @todo
+			if has_libimobiledevice and False:
+				ios_device_list = subprocess.check_output('idevice_id -l', shell=True).split('\n')[0:-1] if has_libimobiledevice else []
+			else:
+				ios_device_list = []
 
 			# base titanium cli command
 			base_command = ['titanium', 'build', '-d', app_path, '-s', sdk_version]
