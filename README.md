@@ -1,7 +1,7 @@
 # TiMagic
 A Simple UI for automation of the Titanium CLI and ADB, which bundles the following features:
 
-* Build and install (apk, ipa) in parallel to all connected devices and genymotion.
+* Build and install (apk, ipa) in parallel to all connected devices and genymotion. (as iOS 8.1 broke libimobiledevice this feature is android only)
 * Quickly install prebuild apps to all connected devices without iTunes, xCode Organizer or adb-monitor.
 * All build related information is pulled from a one-time config file (xml) and the project's tiapp.xml.
 * Run an app in iOS-Simulator (optionally with a specific iOS-version).
@@ -25,7 +25,7 @@ A Simple UI for automation of the Titanium CLI and ADB, which bundles the follow
 * ADB 1.0.* (As part of Appcelerator Titanium)
 
 ## Additional Functionality
-### iOS device features
+### iOS device features (currently not possible because iOS 8.1 broke libimobiledevice)
 To use iOS device, you need to install [libimobiledevice-macosx](https://github.com/benvium/libimobiledevice-macosx).
 
 ### Microsite Distribution
