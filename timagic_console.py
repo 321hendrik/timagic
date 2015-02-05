@@ -295,8 +295,8 @@ def main():
 			android_device_list = subprocess.check_output(settings['adb_path'] + ' devices | grep device', shell=True).replace('\tdevice','').split('\n')[1:-1]
 
 			# libimobiledevice bug @todo
-			if has_libimobiledevice and False:
-				ios_device_list = subprocess.check_output('idevice_id -l', shell=True).split('\n')[0:-1] if has_libimobiledevice else []
+			if has_libimobiledevice:
+				ios_device_list = []#subprocess.check_output('idevice_id -l', shell=True).split('\n')[0:-1] if has_libimobiledevice else []
 			else:
 				ios_device_list = []
 
