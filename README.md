@@ -1,22 +1,19 @@
 # TiMagic
-A Simple UI for automation of the Titanium CLI and ADB, which bundles the following features:
+Command-line tool for the Titanium CLI and ADB, which bundles the following features:
 
 * Build and install (apk, ipa) in parallel to all connected devices and genymotion. (as iOS 8.1 broke libimobiledevice this feature is android only)
 * Quickly install prebuild apps to all connected devices without iTunes, xCode Organizer or adb-monitor.
 * All build related information is pulled from a one-time config file (xml) and the project's tiapp.xml.
 * Run an app in iOS-Simulator (optionally with a specific iOS-version).
-* Distribute your app to iOS and android devices using a generated microsite
+* Distribute your app to iOS and android devices using a generated microsite (beta feature)
 * Remove an app from all connected devices
 * Use your favourite IDE for app development without sacrificing easy and fast access to Titanium CLI features.
 
 ### Get TiMagic
-* Python script: /dist/timagic_console.zip [ recommended ]
-* Mac App (Alpha): /dist/timagic_app.zip [ Mac OS X 10.6+ (Because of 64-bit Python) ]
+Clone the repository to a local folder.
 
 ### Setup your Paths
 * Console-Version: Edit timagic_settings.xml
-* App-Version: Right click on timagic.app and choose "Show Contents". Edit Contents/MacOS/timagic_settings.xml.
-* Folder-Version: Edit timagic/timagic_settings.xml
 
 ### General Requirements
 * Currently only tested on MacOS
@@ -30,17 +27,3 @@ To use iOS device, you need to install [libimobiledevice-macosx](https://github.
 
 ### Microsite Distribution
 To distribute your app (ad-hoc ipa, apk) from a microsite your need the python [qrcode module](https://github.com/lincolnloop/python-qrcode) and some webspace.
-
-## Building the GUI version from source
-### Requirements:
-* Python 2.7 http://www.python.org/download/releases/2.7/
-* PyInstaller 2.1 https://pypi.python.org/pypi/PyInstaller/2.1
-
-### Additional requirements for the GUI version:
-* Qt 4.7.4 http://download.qt-project.org/archive/qt/4.7/
-* PySide 1.1.0 http://qt-project.org/wiki/Get-PySide
-
-If you edited timagic.ui, create a python module from it by running `pyside-uic timagic.ui > ui_timagic.py`
-If you used additional resources, add them to timagic.spec
-
-To build and package run `./build.sh`
