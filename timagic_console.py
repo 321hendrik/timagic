@@ -2,7 +2,7 @@
 __author__      = "Hendrik Elsner"
 __copyright__   = "Copyleft 2015"
 __email__ = "321hendrik@gmail.com"
-__version__ = "2.2"
+__version__ = "2.3"
 
 import os, sys, subprocess, datetime, readline
 
@@ -116,7 +116,7 @@ def print_help(has_libimobiledevice):
     ''' prints out the help '''
     shell_exec('clear')
     print ''
-    print color('yellow', '-'*20 + '= TiMagic HELP ' + '=' + '-'*20)
+    print color('green', 'TiMagic v' +__version__) + ' created by ' + __author__ + ' (' + __email__ + ')' + ' ' + __copyright__
     if not has_libimobiledevice:
         print '! To unlock additional features install https://github.com/benvium/libimobiledevice-macosx !'
     print ''
@@ -142,6 +142,50 @@ def print_help(has_libimobiledevice):
     print '*' + color('green','ipa') + '[IOS_VERSION]' + ('\t'*2) + ': creates an ad-hoc IPA'
     if has_libimobiledevice:
         print '*' + color('green','todevice') + ('\t'*3) + ': installs ad-hoc IPA from previous build to all connected iOS devices'
+    if (not has_libimobiledevice) or (not qrcode_available):
+        print ''
+        print color('red', 'You can unlock additional functionality by installing these dependencies: ' + ('libimobiledevice' if not has_libimobiledevice else '') + (', ' if ((not has_libimobiledevice) and (not qrcode_available)) else '') + ('qrcode for python' if not qrcode_available else ''))
+        print color('red', 'For installation instructions visit https://github.com/hendrikelsner/timagic')
+        print ''
+    else:
+        print '\n\n'
+
+def print_version_and_info():
+    print color('green', 'TiMagic v' +__version__) + ' created by ' + __author__ + ' (' + __email__ + ')' + ' ' + __copyright__
+
+def print_available_projects(projects):
+    ''' prints out all available projects '''
+    shell_exec('clear')
+    project_list = ''
+    for i in range(len(projects)):
+        project_list += (projects[i] + ' | ')
+    print color('green', project_list[:-3])
+
+def print_cli_help(has_libimobiledevice):
+    ''' prints the cli help '''
+    shell_exec('clear')
+    print color('green', 'TiMagic v' +__version__) + ' created by ' + __author__ + ' (' + __email__ + ')' + ' ' + __copyright__
+    if not has_libimobiledevice:
+        print '! To unlock additional features install https://github.com/benvium/libimobiledevice-macosx !'
+    print ''
+    print color('yellow', 'usage: magic ([project_id]) ([action]) ([ios_version])') + ' ' + color('green', 'running without parameters will launch a console gui version')
+    print ''
+    print ' General Actions - no [project_id] needed ' + '-'*60
+    print color('green','list') + ('\t'*6) + ": lists available project ids"
+    print ''
+    print ' General Actions ' + '-'*60
+    print '[project_id] ' + color('green','(build)') + ' ([ios_version])' + ('\t'*2) + ': installs to all connected devices'
+    print '[project_id] ' + color('green','remove') + ('\t'*4) + ': removes the app from all connected ' + ('' if has_libimobiledevice else 'android ') + 'devices'
+    print '[project_id] ' + color('green','clean') + ('\t'*4) + ": cleans the project's build directory"
+    print ''
+    print ' Android Actions ' + '-'*60
+    print '[project_id] ' + color('green','apk') + ('\t'*4) +': creates a signed APK'
+    print '[project_id] ' + color('green','todevice') + ('\t'*4) + ': installs signed APK from previous build to all connected android devices'
+    print '[project_id] ' + color('green','todeviceU') + ('\t'*4) + ': installs unsigned APK from previous build to all connected android devices'
+    print ''
+    print ' iOS Actions ' + '-'*60
+    print '[project_id] ' + color('green','iphone') + ' | ' + color('green','ipad') + ' [ios_version]' + ('\t'*1) + ': launches the iphone or ipad simulator for the given project'
+    print '[project_id] ' + color('green','ipa') + ' [ios_version]' + ('\t'*3) + ': creates an ad-hoc IPA'
     if (not has_libimobiledevice) or (not qrcode_available):
         print ''
         print color('red', 'You can unlock additional functionality by installing these dependencies: ' + ('libimobiledevice' if not has_libimobiledevice else '') + (', ' if ((not has_libimobiledevice) and (not qrcode_available)) else '') + ('qrcode for python' if not qrcode_available else ''))
@@ -218,9 +262,9 @@ def distribute(project_id, bundle_id, bundle_version, title):
     return app_info['dist_dir']
 
 def main():
+    ''' main ui loop '''
     # global vars
     last_choice = ''
-    history = []
     script_path = '/'.join(sys.argv[0].split('/')[0:-1]) + '/'
     script_path = '' if (len(script_path) == 1) else script_path
 
@@ -433,5 +477,225 @@ def main():
         else:
             notification = color('red', '\n --> input out of range please enter valid numbers only\n')
 
+def mainCLI():
+    ''' main cli interface function '''
+    # global vars
+    last_choice = ''
+    script_path = '/'.join(sys.argv[0].split('/')[0:-1]) + '/'
+    script_path = '' if (len(script_path) == 1) else script_path
+
+    # get settings from settings file
+    config_xml_path = script_path + 'timagic_settings.xml'
+
+    for elem in settings:
+        settings[elem] = get_from_xml(config_xml_path, elem)
+
+    # UI variables
+    notification = '\n'
+    projects = get_project_names()
+
+    # check if libimobiledevice is installed
+    has_libimobiledevice = False
+    try:
+        subprocess.call('idevice_id', stdout=subprocess.PIPE)
+        has_libimobiledevice = True
+    except:
+        print 'libimobiledevice is not installed...'
+
+    # print the ui
+    user_input = sys.argv[1]
+
+    project_num = ''
+    ios_version = ''
+    newest_ios_version = settings['latest_ios_version']
+
+    # print help
+    if str(user_input) in ['-h', '--help', 'help']:
+        print_cli_help(has_libimobiledevice)
+        return
+
+    # print overview
+    if str(user_input) in ['-l', '--list', 'list']:
+        print_available_projects(projects)
+        return
+
+    # clear project
+    if str(user_input) in ['-c', '--clean', 'clean']:
+        shell_exec('clear')
+        return
+
+    # print version and info
+    if str(user_input) in ['-v', '--version', 'version']:
+        print_version_and_info()
+        return
+
+    # parse arguments
+    if len(sys.argv) > 2:
+        # set project name
+        project_name = sys.argv[1]
+        input_params = sys.argv[2]
+        if len(sys.argv) > 3:
+            ios_version += sys.argv[3]
+    else:
+        print color('red', '\n --> malformed call (use "--help" flag to lookup usage)\n')
+
+    # check if project's name is valid
+    if not (project_name in projects):
+        print color('red', '\n --> no project with that name (use "--list" flag to list all available)\n')
+        return
+
+    # clear shell output
+    shell_exec('clear')
+
+    # get build parameters
+    project_name = project_name
+    tiapp_xml_path = settings['titanium_workspace_path'] + project_name + '/tiapp.xml'
+    sdk_version = get_from_xml(tiapp_xml_path, 'sdk-version')
+    app_id = get_from_xml(tiapp_xml_path, 'id')
+    app_version = get_from_xml(tiapp_xml_path, 'version')
+    app_name = get_from_xml(tiapp_xml_path, 'name')
+    app_name_escaped_spaces = app_name.replace(' ', '\ ')
+    app_name_no_spaces = app_name.replace(' ', '');
+    ios_version = ios_version or newest_ios_version # default to newest iOS-version
+    app_path = settings['titanium_workspace_path'] + project_name
+
+    # get lists of connected devices
+    android_device_list = subprocess.check_output(settings['adb_path'] + ' devices | grep device', shell=True).replace('\tdevice','').split('\n')[1:-1]
+
+    # libimobiledevice bug @todo
+    if has_libimobiledevice:
+        ios_device_list = []#subprocess.check_output('idevice_id -l', shell=True).split('\n')[0:-1] if has_libimobiledevice else []
+    else:
+        ios_device_list = []
+
+    # base titanium cli command
+    base_command = ['titanium', 'build', '-d', app_path, '-s', sdk_version]
+
+    if input_params in ['', 'build', 'todevice', 'todeviceU', 'remove']:
+
+        android_connected = True if len(android_device_list) else False
+        ios_connected = True if len(ios_device_list) else False
+
+        if android_connected or ios_connected:
+            if input_params in ['', 'build']:
+                build_processes = {}
+                if android_connected:
+                    # default build for android devices
+                    print 'building unsigned APK'
+                    build_command_apk = base_command + ['--platform', 'android', '-b']
+                    build_processes['android'] = Process( target=shell_exec, args=(build_command_apk,) )
+
+                if ios_connected:
+                    # default build for ios devices
+                    print 'building ad-hoc IPA'
+                    build_command_ipa = base_command + ['--platform', 'ios', '-R', settings['distribution_name'], '-I', ios_version, '-P', settings['pp_uuid'], '-O', settings['ipa_output_path'], '-T', 'dist-adhoc']
+                    build_processes['ios'] = Process( target=shell_exec, args=(build_command_ipa,) )
+
+                # start parallel builds and wait for them to finish
+                for platform in build_processes:
+                    build_processes[platform].start()
+                    build_processes[platform].join()
+
+
+            # install to connected devices
+            apk_path = ''
+            android_kwargs = { 'app_id': app_id }
+            if android_connected:
+                # get app path
+                if input_params == 'todevice':
+                    apk_path = settings['apk_output_path'] + app_name_escaped_spaces + '.apk'
+                else:
+                    apk_path = app_path +'/build/android/bin/' + (app_name_no_spaces if float(sdk_version[0:3]) >= 3.2 else 'app') + '.apk'
+
+            ipa_path = ''
+            ios_kwargs = {}
+            if ios_connected:
+                # get app path
+                ipa_path = settings['ipa_output_path'] + app_name_escaped_spaces + '.ipa'
+
+            # remove or install
+            if input_params == 'remove':
+                operation = 'removing from'
+
+                android_target = remove_apk
+
+                ios_target = remove_ipa
+                ios_kwargs['app_id'] = app_id
+            else:
+                operation = 'installing to'
+
+                android_target = deploy_apk
+                android_kwargs['apk_path'] = apk_path
+                android_kwargs['app_name_no_spaces'] = app_name_no_spaces
+
+                ios_target = deploy_ipa
+                ios_kwargs['ipa_path'] = ipa_path
+
+            parallel_install_processes = {}
+            # install the apk to all connected android devices
+            print project_name + ' ' + operation + ' all android devices...'
+            for device_id in android_device_list:
+                android_kwargs['device_id'] = device_id
+                parallel_install_processes[device_id] = Process(target=android_target, kwargs=android_kwargs)
+                parallel_install_processes[device_id].start()
+
+            # install the ipa to all connected ios devices
+            print project_name + ' ' + operation + ' all iOS devices...'
+            for device_id in ios_device_list:
+                ios_kwargs['device_id'] = device_id
+                parallel_install_processes[device_id] = Process(target=ios_target, kwargs=ios_kwargs)
+                parallel_install_processes[device_id].start()
+
+            # wait for parallel installation processes to finish
+            for device_id in parallel_install_processes:
+                parallel_install_processes[device_id].join()
+        else:
+            notification =  color('red', '\n --> Please connect a device first.\n')
+
+    elif input_params == 'clean':
+        shell_exec(['titanium', 'clean', '-d', app_path])
+
+    elif input_params == 'ipa':
+        # build ad-hoc IPA for given iOS-version
+        shell_exec(base_command + ['-p', 'ios', '-R', settings['distribution_name'], '-I', ios_version, '-P', settings['pp_uuid'], '-O', settings['ipa_output_path'], '-T', 'dist-adhoc'])
+
+    elif input_params == 'ipad' or input_params == 'iphone':
+        # Install to and launch given iOS-Simulator
+        shell_exec(base_command + ['-p', 'ios', '-I', ios_version, '-Y', input_params, '-S', ios_version, '-T', 'simulator'])
+
+    elif input_params == 'apk':
+        # build Play-Store APK
+        password_flag = ('--store-password' if float(sdk_version[0:3]) >= 3.2 else '--password')
+        shell_exec(base_command + ['-p', 'android', '-K', settings['keystore_path'], '-L', settings['keystore_alias'], password_flag, settings['keystore_pw'], '-O', settings['apk_output_path'], '-T', 'dist-playstore'])
+
+    elif (input_params in ['dist', 'distbuild']) and qrcode_available:
+        # generate distribution files
+        print 'generating files for distribution'
+        dist_path = distribute(project_name, app_id, app_version, app_name)
+
+        if input_params == 'distbuild':
+            # build ipa and apk
+            password_flag = ('--store-password' if float(sdk_version[0:3]) >= 3.2 else '--password')
+            apk_build_process = Process(target=shell_exec, args=(base_command + ['-p', 'android', '-K', settings['keystore_path'], '-L', settings['keystore_alias'], password_flag, settings['keystore_pw'], '-O', dist_path, '-T', 'dist-playstore'],))
+            ipa_build_process = Process(target=shell_exec, args=(base_command + ['-p', 'ios', '-R', settings['distribution_name'], '-I', ios_version, '-P', settings['pp_uuid'], '-O', dist_path, '-T', 'dist-adhoc'],))
+
+            apk_build_process.start()
+            ipa_build_process.start()
+
+            apk_build_process.join()
+            ipa_build_process.join()
+
+            # rename app files
+            dist_path += '/'
+            datecode_appname = project_name + '-' + str(get_datecode())
+            shell_exec(['mv', (dist_path + app_name_escaped_spaces + '.ipa'), (dist_path + datecode_appname + '.ipa')])
+            shell_exec(['mv', (dist_path + app_name_escaped_spaces + '.apk'), (dist_path + datecode_appname + '.apk')])
+
+        print 'finished generating files for distribution'
+
 if __name__ == '__main__':
-    main()
+    # launch CLI or UI version depending on given arguments
+    if len(sys.argv) > 1:
+        mainCLI()
+    else:
+        main()
