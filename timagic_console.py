@@ -173,26 +173,28 @@ def print_cli_help(has_libimobiledevice):
     print ' General Actions - no [project_id] needed ' + '-'*60
     print color('green','list') + ('\t'*6) + ": lists available project ids"
     print ''
+    print color('blue', 'if project_id is ommited, TiMagic will attempt to deduce it by cwd')
+    print ''
     print ' General Actions ' + '-'*60
-    print '[project_id] ' + color('green','(build)') + ' ([ios_version])' + ('\t'*2) + ': installs to all connected devices'
-    print '[project_id] ' + color('green','remove') + ('\t'*4) + ': removes the app from all connected ' + ('' if has_libimobiledevice else 'android ') + 'devices'
-    print '[project_id] ' + color('green','clean') + ('\t'*4) + ": cleans the project's build directory"
+    print '([project_id]) ' + color('green','install') + ' ([ios_version])' + ('\t'*2) + ': installs to all connected devices'
+    print '([project_id]) ' + color('green','remove') + ('\t'*4) + ': removes the app from all connected ' + ('' if has_libimobiledevice else 'android ') + 'devices'
+    print '([project_id]) ' + color('green','clean') + ('\t'*4) + ": cleans the project's build directory"
     print ''
     print ' Android Actions ' + '-'*60
-    print '[project_id] ' + color('green','apk') + ('\t'*4) +': creates a signed APK'
-    print '[project_id] ' + color('green','todevice') + ('\t'*4) + ': installs signed APK from previous build to all connected android devices'
-    print '[project_id] ' + color('green','todeviceU') + ('\t'*4) + ': installs unsigned APK from previous build to all connected android devices'
+    print '([project_id]) ' + color('green','apk') + ('\t'*4) +': creates a signed APK'
+    print '([project_id]) ' + color('green','todevice') + ('\t'*4) + ': installs signed APK from previous build to all connected android devices'
+    print '([project_id]) ' + color('green','todeviceU') + ('\t'*4) + ': installs unsigned APK from previous build to all connected android devices'
     print ''
     print ' iOS Actions ' + '-'*60
-    print '[project_id] ' + color('green','iphone') + ' | ' + color('green','ipad') + ' [ios_version]' + ('\t'*1) + ': launches the iphone or ipad simulator for the given project'
-    print '[project_id] ' + color('green','ipa') + ' [ios_version]' + ('\t'*3) + ': creates an ad-hoc IPA'
+    print '([project_id]) ' + color('green','iphone') + ' | ' + color('green','ipad') + ' [ios_version]' + ('\t'*1) + ': launches the iphone or ipad simulator for the given project'
+    print '([project_id]) ' + color('green','ipa') + ' [ios_version]' + ('\t'*3) + ': creates an ad-hoc IPA'
     if (not has_libimobiledevice) or (not qrcode_available):
         print ''
         print color('red', 'You can unlock additional functionality by installing these dependencies: ' + ('libimobiledevice' if not has_libimobiledevice else '') + (', ' if ((not has_libimobiledevice) and (not qrcode_available)) else '') + ('qrcode for python' if not qrcode_available else ''))
         print color('red', 'For installation instructions visit https://github.com/hendrikelsner/timagic')
         print ''
     else:
-        print '\n\n'
+        print ''
 
 def generate_plist(params):
     ''' generates a plist file for use with an app download link '''
@@ -529,21 +531,33 @@ def mainCLI():
         print_version_and_info()
         return
 
-    # parse arguments
-    if len(sys.argv) > 2:
-        # set project name
-        project_name = sys.argv[1]
-        input_params = sys.argv[2]
-        if len(sys.argv) > 3:
-            ios_version += sys.argv[3]
+    # try to get project name from cwd
+    name_from_pwd = os.getcwd().split("/")[-1:][0]
+    if not (name_from_pwd in projects):
+        # parse commands cwd independent
+        if len(sys.argv) > 2:
+            # set project name
+            project_name = sys.argv[1]
+            input_params = sys.argv[2]
+            if len(sys.argv) > 3:
+                ios_version += sys.argv[3]
+        else:
+            print color('red', '\n --> malformed call (use "--help" flag to lookup usage)\n')
+            return
     else:
-        print color('red', '\n --> malformed call (use "--help" flag to lookup usage)\n')
+        project_name = name_from_pwd
+        input_params = sys.argv[1]
+        if len(sys.argv) > 2:
+            ios_version += sys.argv[2]
 
     # check if project's name is valid
     if not (project_name in projects):
         print color('red', '\n --> no project with that name (use "--list" flag to list all available)\n')
         return
 
+    print project_name
+    print input_params
+    print ios_version
     # clear shell output
     shell_exec('clear')
 
@@ -571,13 +585,13 @@ def mainCLI():
     # base titanium cli command
     base_command = ['titanium', 'build', '-d', app_path, '-s', sdk_version]
 
-    if input_params in ['', 'build', 'todevice', 'todeviceU', 'remove']:
+    if input_params in ['', 'install', 'todevice', 'todeviceU', 'remove']:
 
         android_connected = True if len(android_device_list) else False
         ios_connected = True if len(ios_device_list) else False
 
         if android_connected or ios_connected:
-            if input_params in ['', 'build']:
+            if input_params in ['', 'install']:
                 build_processes = {}
                 if android_connected:
                     # default build for android devices
@@ -692,6 +706,8 @@ def mainCLI():
             shell_exec(['mv', (dist_path + app_name_escaped_spaces + '.apk'), (dist_path + datecode_appname + '.apk')])
 
         print 'finished generating files for distribution'
+    else:
+        print color('red', 'unknown action: ' + input_params + ' (use --help flag to lookup available actions)')
 
 if __name__ == '__main__':
     # launch CLI or UI version depending on given arguments
