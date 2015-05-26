@@ -521,11 +521,6 @@ def mainCLI():
         print_available_projects(projects)
         return
 
-    # clear project
-    if str(user_input) in ['-c', '--clean', 'clean']:
-        shell_exec('clear')
-        return
-
     # print version and info
     if str(user_input) in ['-v', '--version', 'version']:
         print_version_and_info()
@@ -555,9 +550,6 @@ def mainCLI():
         print color('red', '\n --> no project with that name (use "--list" flag to list all available)\n')
         return
 
-    print project_name
-    print input_params
-    print ios_version
     # clear shell output
     shell_exec('clear')
 
@@ -572,6 +564,11 @@ def mainCLI():
     app_name_no_spaces = app_name.replace(' ', '');
     ios_version = ios_version or newest_ios_version # default to newest iOS-version
     app_path = settings['titanium_workspace_path'] + project_name
+
+    # clear project
+    if str(user_input) in ['-c', '--clean', 'clean']:
+        shell_exec(['titanium', 'clean', '-d', app_path])
+        return
 
     # get lists of connected devices
     android_device_list = subprocess.check_output(settings['adb_path'] + ' devices | grep device', shell=True).replace('\tdevice','').split('\n')[1:-1]
