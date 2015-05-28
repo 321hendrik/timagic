@@ -1,5 +1,5 @@
 # TiMagic
-[*Screenshot here*](screenshot.png)  
+![*Screenshot here*](screenshot.png)  
 Command-line tool for the Titanium CLI and ADB, which bundles the following features:
 
 * Build and install in parallel to all connected android devices and genymotion or run in iOS simulator.
