@@ -1,4 +1,4 @@
-#!/usr/bin python
+#!/usr/bin/env python
 __author__      = "Hendrik Elsner"
 __copyright__   = "Copyleft 2015"
 __email__ = "321hendrik@gmail.com"
