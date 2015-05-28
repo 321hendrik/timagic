@@ -12,7 +12,7 @@ Command-line tool for the Titanium CLI and ADB, which bundles the following feat
 1. Clone the repository to a local folder.
 1. Setup your paths and configuration in timagic_settings_empty.xml and rename it to timagic_settings.xml
 1. Simlink the files to a folder in your PATH
-(Assuming your on the repositories root folder and `~/bin` is in your PATH) run:  
+(Assuming you're on the repository's root folder and `~/bin` is in your PATH) run:  
 ```ln timagic ~/bin/timagic;ln timagic_settings.xml ~/bin/timagic_settings.xml;chmod +x ~/bin/timagic```
 
 ### Use TiMagic
