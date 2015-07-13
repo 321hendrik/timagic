@@ -15,7 +15,8 @@
 	<ipa_output_path>/Users/hendrik_elsner/Documents/APP_IPAs_iOS/</ipa_output_path>
 	<distribution_name>"Distribution Name"</distribution_name>
 	<pp_uuid>PP_UUID</pp_uuid>
-
+	<latest_ios_version>8.3</latest_ios_version>
+	
 	<!-- For Microsite Distribution -->
 	<distribution_path>/Users/hendrik_elsner/Documents/APP_Dist/</distribution_path>
 	<distribution_base_url>https://your-distribution-server.de/</distribution_base_url>
