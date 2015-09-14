@@ -118,6 +118,7 @@ def print_cli_help(has_libimobiledevice):
     print color('green','remove') + ('\t'*4) + ': removes the app from all connected ' + ('' if has_libimobiledevice else 'android ') + 'devices'
     print color('green','clean') + ('\t'*4) + ": cleans the project's build directory"
     print color('green','dist') + ' [dist_suffix]' + ('\t'*2) + ": create a distribution website ( optionally with custom path )"
+    print color('green','distbuild') + ' [dist_suffix]' + ('\t'*2) + ": same as above but also creates binary files (ipa, apk)"
     print ''
     print ' Android Actions ' + '-'*60
     print color('green','apk') + ('\t'*4) +': creates a signed APK in dist subdirectory'
@@ -322,6 +323,17 @@ def get_latest_ios_sdk_version():
     else:
         return False
 
+def get_deployment_targets(xml_path):
+    ''' get the deployment-targets from xml-file '''
+    xml_tree = dom.parse(xml_path)
+    deployment_targets = [];
+    for node in xml_tree.firstChild.childNodes:
+        if node.nodeName == 'deployment-targets':
+            for child in node.childNodes:
+                if child.nodeName == 'target' and child.firstChild.data == 'true':
+                    deployment_targets.append(child.attributes.item(0).value)
+    return deployment_targets
+
 def main():
     ''' main cli interface function '''
     # global vars
@@ -402,13 +414,10 @@ def main():
     app_name = get_from_xml(tiapp_xml_path, 'name')
     app_name_escaped_spaces = app_name.replace(' ', '\ ')
     app_name_no_spaces = app_name.replace(' ', '');
-    icon_path = project_path + '/Resources/iphone/' + get_from_xml(tiapp_xml_path, 'icon')
 
-    # use large icon file
-    icon_path_name = icon_path.split('/')[-1].split('.')
-    icon_path = icon_path.split('/')[0:-1]
-    icon_path.append('@2x.'.join(icon_path_name))
-    icon_path = '/'.join(icon_path)
+    deployment_targets = get_deployment_targets(tiapp_xml_path)
+    deploy_for_android = 'android' in deployment_targets;
+    deploy_for_ios = ('iphone' in deployment_targets) or ('ipad' in deployment_targets);
 
     # clear project
     if str(user_input) in ['-c', '--clean', 'clean']:
@@ -427,6 +436,7 @@ def main():
     # base titanium cli command
     base_command = ['titanium', 'build', '-d', project_path, '-s', sdk_version]
 
+    # install to connected devices
     if input_params in ['', 'install', 'todevice', 'todeviceU', 'remove']:
 
         android_connected = True if len(android_device_list) else False
@@ -435,15 +445,24 @@ def main():
         if android_connected or ios_connected:
             if input_params in ['', 'install']:
                 build_processes = {}
+
+                # default build for android devices
                 if android_connected:
-                    # default build for android devices
-                    print 'building unsigned APK'
+                    if not deploy_for_android:
+                        print color('red', 'android is not defined as deploy target')
+                        return
+
+                    print 'building unsigned APK...'
                     build_command_apk = base_command + ['--platform', 'android', '-b']
                     build_processes['android'] = Process( target=shell_exec, args=(build_command_apk,) )
 
+                # default build for ios devices
                 if ios_connected:
-                    # default build for ios devices
-                    print 'building ad-hoc IPA'
+                    if not deploy_for_ios:
+                        print color('red', 'ios is not defined as deploy target')
+                        return
+
+                    print 'building ad-hoc IPA...'
                     if settings['distribution_name'] and settings['pp_uuid']:
                         build_command_ipa = base_command + ['--platform', 'ios', '-R', settings['distribution_name'], '-I', ios_version, '-P', settings['pp_uuid'], '-O', settings['ipa_output_path'], '-T', 'dist-adhoc']
                     else:
@@ -492,14 +511,16 @@ def main():
 
             parallel_install_processes = {}
             # install the apk to all connected android devices
-            print project_name + ' ' + operation + ' all android devices...'
+            if len(android_device_list) > 0:
+                print project_name + ' ' + operation + ' all android devices...'
             for device_id in android_device_list:
                 android_kwargs['device_id'] = device_id
                 parallel_install_processes[device_id] = Process(target=android_target, kwargs=android_kwargs)
                 parallel_install_processes[device_id].start()
 
             # install the ipa to all connected ios devices
-            print project_name + ' ' + operation + ' all iOS devices...'
+            if len(ios_device_list) > 0:
+                print project_name + ' ' + operation + ' all iOS devices...'
             for device_id in ios_device_list:
                 ios_kwargs['device_id'] = device_id
                 parallel_install_processes[device_id] = Process(target=ios_target, kwargs=ios_kwargs)
@@ -508,56 +529,86 @@ def main():
             # wait for parallel installation processes to finish
             for device_id in parallel_install_processes:
                 parallel_install_processes[device_id].join()
+
+            print color('green', 'DONE') + ' installing to connected devices (see log above for errors)'
         else:
             notification =  color('red', '\n --> Please connect a device first.\n')
 
-    elif input_params == 'clean':
-        shell_exec(['titanium', 'clean', '-d', project_path])
-
+    # build ad-hoc IPA for given iOS-version
     elif input_params == 'ipa':
-        # build ad-hoc IPA for given iOS-version
+        if not deploy_for_ios:
+            print color('red', 'ios is not defined as deploy target')
+            return
+
         if settings['distribution_name'] and settings['pp_uuid']:
             shell_exec(base_command + ['-p', 'ios', '-R', settings['distribution_name'], '-I', ios_version, '-P', settings['pp_uuid'], '-O', settings['ipa_output_path'], '-T', 'dist-adhoc'])
         else:
             shell_exec(base_command + ['-p', 'ios', '-I', ios_version, '-T', 'dist-adhoc'])
 
+    # Install to and launch given iOS-Simulator
     elif input_params == 'ipad' or input_params == 'iphone':
-        # Install to and launch given iOS-Simulator
+        if not deploy_for_ios:
+            print color('red', 'ios is not defined as deploy target')
+            return
+
         shell_exec(base_command + ['-p', 'ios', '-I', ios_version, '-Y', input_params, '-S', ios_version, '-T', 'simulator'])
 
+    # build Play-Store APK
     elif input_params == 'apk':
-        # build Play-Store APK
+        if not deploy_for_android:
+            print color('red', 'android is not defined as deploy target')
+            return
+
         password_flag = ('--store-password' if float(sdk_version[0:3]) >= 3.2 else '--password')
         shell_exec(base_command + ['-p', 'android', '-K', settings['keystore_path'], '-L', settings['keystore_alias'], password_flag, settings['keystore_pw'], '-O', settings['apk_output_path'], '-T', 'dist-playstore'])
 
+    # generate distribution files
     elif (input_params in ['dist', 'distbuild']):
-        # generate distribution files
-        print 'generating files for distribution'
+        print 'generating files for distribution...'
+
+        # get icon file for distribution website
+        icon_path = project_path + '/Resources/iphone/' + get_from_xml(tiapp_xml_path, 'icon')
+        icon_path_name = icon_path.split('/')[-1].split('.')
+        icon_path = icon_path.split('/')[0:-1]
+        icon_path.append('@2x.'.join(icon_path_name))
+        icon_path = '/'.join(icon_path)
+
+        # invoke distribution actions
         dist_path = distribute(dist_suffix, app_id, app_version, app_name, icon_path)
 
         # generate distribution binaries
         if input_params == 'distbuild':
-            # build ipa and apk
-            password_flag = ('--store-password' if float(sdk_version[0:3]) >= 3.2 else '--password')
-            apk_build_process = Process(target=shell_exec, args=(base_command + ['-p', 'android', '-K', settings['keystore_path'], '-L', settings['keystore_alias'], password_flag, settings['keystore_pw'], '-O', dist_path, '-T', 'dist-playstore'],))
 
-            if settings['distribution_name'] and settings['pp_uuid']:
-                ipa_build_process = Process(target=shell_exec, args=(base_command + ['-p', 'ios', '-R', settings['distribution_name'], '-I', ios_version, '-P', settings['pp_uuid'], '-O', dist_path, '-T', 'dist-adhoc'],))
-            else:
-                ipa_build_process = Process(target=shell_exec, args=(base_command + ['-p', 'ios', '-I', ios_version, '-O', dist_path, '-T', 'dist-adhoc'],))
+            # build apk
+            if deploy_for_android:
+                password_flag = ('--store-password' if float(sdk_version[0:3]) >= 3.2 else '--password')
+                apk_build_process = Process(target=shell_exec, args=(base_command + ['-p', 'android', '-K', settings['keystore_path'], '-L', settings['keystore_alias'], password_flag, settings['keystore_pw'], '-O', dist_path, '-T', 'dist-playstore'],))
+                apk_build_process.start()
 
-            apk_build_process.start()
-            ipa_build_process.start()
+            # build ipa
+            if deploy_for_ios:
+                if settings['distribution_name'] and settings['pp_uuid']:
+                    ipa_build_process = Process(target=shell_exec, args=(base_command + ['-p', 'ios', '-R', settings['distribution_name'], '-I', ios_version, '-P', settings['pp_uuid'], '-O', dist_path, '-T', 'dist-adhoc'],))
+                else:
+                    ipa_build_process = Process(target=shell_exec, args=(base_command + ['-p', 'ios', '-I', ios_version, '-O', dist_path, '-T', 'dist-adhoc'],))
+                ipa_build_process.start()
 
-            apk_build_process.join()
-            ipa_build_process.join()
+            # wait for build processes to finish
+            if deploy_for_android:
+                apk_build_process.join()
+            if deploy_for_ios:
+                ipa_build_process.join()
 
             # rename app files
             dist_path += '/'
-            shell_exec(['mv', (dist_path + app_name_escaped_spaces + '.ipa'), (dist_path + app_name_escaped_spaces + '.ipa')])
-            shell_exec(['mv', (dist_path + app_name_escaped_spaces + '.apk'), (dist_path + app_name_escaped_spaces + '.apk')])
+            if deploy_for_android:
+                shell_exec(['mv', (dist_path + app_name_escaped_spaces + '.apk'), (dist_path + app_name_escaped_spaces + '.apk')])
+            if deploy_for_ios:
+                shell_exec(['mv', (dist_path + app_name_escaped_spaces + '.ipa'), (dist_path + app_name_escaped_spaces + '.ipa')])
 
-        print 'finished generating files for distribution'
+        print color('green', 'DONE') + ' generating files for distribution. available at ' + color('aqua', dist_path)
+
+    # catch unknown action
     else:
         print color('red', 'unknown action: ' + input_params + ' (use --help flag to lookup available actions)')
 
