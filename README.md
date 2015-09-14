@@ -1,4 +1,4 @@
-# TiMagic
+# TiMagic (NodeJS)
 ![*Screenshot here*](screenshot.png)  
 Command-line tool for the Titanium CLI and ADB, which bundles the following features:
 
@@ -20,6 +20,5 @@ Run `timagic help` from your app projects directory for usage information.
 
 ### General Requirements
 * Currently only tested on MacOS
-* [Python 2.7](http://www.python.org/download/releases/2.7/)
 * [Appcelerator Titanium CLI](https://github.com/appcelerator/titanium) <= 3.2
 * ADB 1.0.* (As part of Appcelerator Titanium)

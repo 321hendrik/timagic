@@ -1,0 +1,30 @@
+{
+  "name": "timagic",
+  "version": "0.0.3",
+  "description": "A Simple UI for automation of the Titanium CLI and ADB",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hendrikelsner/TiMagic/tree/node"
+  },
+  "keywords": [
+    "node",
+    "cli",
+    "adb",
+    "appcelerator",
+    "titanium"
+  ],
+  "author": "Hendrik Elsner",
+  "license": "Copyleft 2015",
+  "preferGlobal": true,
+  "bin": {
+    "timagic": "./bin/timagic"
+  },
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "dependencies": {
+    "cli": "^0.10.0",
+    "q": "^1.4.1"
+  }
+}
