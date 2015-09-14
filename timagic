@@ -117,7 +117,7 @@ def print_cli_help(has_libimobiledevice):
     print color('green','install') + ' ([ios_version])' + ('\t'*2) + ': installs to all connected devices'
     print color('green','remove') + ('\t'*4) + ': removes the app from all connected ' + ('' if has_libimobiledevice else 'android ') + 'devices'
     print color('green','clean') + ('\t'*4) + ": cleans the project's build directory"
-    print color('green','dist') + ' [dist_suffix]' + ('\t'*2) + ": create a distribution website ( optionally with custom path http://base.url/(appname or [dist_suffix]) )"
+    print color('green','dist') + ' [dist_suffix]' + ('\t'*2) + ": create a distribution website ( optionally with custom path )"
     print ''
     print ' Android Actions ' + '-'*60
     print color('green','apk') + ('\t'*4) +': creates a signed APK in dist subdirectory'
