@@ -1,7 +1,8 @@
 # TiMagic (NodeJS)
-![*Screenshot here*](screenshot.png)  
-Command-line tool for the Titanium CLI and ADB, which bundles the following features:
+Command-line tool for the Titanium CLI and ADB. [![npm version](https://badge.fury.io/js/timagic.svg)](http://badge.fury.io/js/timagic)
 
+![*Screenshot here*](screen.png)
+### Features
 * Build and install in parallel to all connected android devices and genymotion or run in iOS simulator.
 * All build related information is pulled from cli setup and the project's tiapp.xml.
 * Use your favourite IDE for app development without sacrificing easy and fast access to Titanium CLI features.
