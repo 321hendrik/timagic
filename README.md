@@ -1,5 +1,5 @@
-# TiMagic (NodeJS)
-Command-line tool for the Titanium CLI and ADB. [![npm version](https://badge.fury.io/js/timagic.svg)](http://badge.fury.io/js/timagic)
+# TiMagic
+NodeJS Command-line tool for the Titanium CLI and ADB. [![npm version](https://badge.fury.io/js/timagic.svg)](http://badge.fury.io/js/timagic)
 
 ![*Screenshot here*](screen.png)
 ### Features

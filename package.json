@@ -1,11 +1,11 @@
 {
   "name": "timagic",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A Simple UI for automation of the Titanium CLI and ADB",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/hendrikelsner/TiMagic/tree/node"
+    "url": "https://github.com/hendrikelsner/TiMagic"
   },
   "keywords": [
     "node",
