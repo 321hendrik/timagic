@@ -1,6 +1,6 @@
 {
-  "name": "timagic",
-  "version": "0.2.1",
+  "name": "TiMagic",
+  "version": "0.2.2",
   "description": "A Simple UI for automation of the Titanium CLI and ADB",
   "main": "index.js",
   "repository": {
@@ -8,13 +8,21 @@
     "url": "https://github.com/hendrikelsner/TiMagic"
   },
   "keywords": [
-    "node",
-    "cli",
-    "adb",
     "appcelerator",
-    "titanium"
+    "titanium",
+    "mobile",
+    "ios",
+    "iphone",
+    "android",
+    "alloy",
+    "cli",
+    "node",
+    "adb"
   ],
-  "author": "Hendrik Elsner",
+  "author": {
+    "name": "Hendrik Elsner",
+    "email": "321hendrik@gmail.com"
+  },
   "license": "Copyleft 2015",
   "preferGlobal": true,
   "bin": {
@@ -28,5 +36,8 @@
     "mkdirp": "^0.5.1",
     "q": "^1.4.1",
     "xml2js": "^0.4.12"
+  },
+  "bugs": {
+    "url": "https://github.com/hendrikelsner/TiMagic/issues"
   }
 }
