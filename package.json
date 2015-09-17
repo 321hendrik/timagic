@@ -1,5 +1,5 @@
 {
-  "name": "TiMagic",
+  "name": "timagic",
   "version": "0.2.2",
   "description": "A Simple UI for automation of the Titanium CLI and ADB",
   "main": "index.js",
