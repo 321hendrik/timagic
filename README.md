@@ -4,7 +4,7 @@ NodeJS Command-line tool for the Titanium CLI and ADB.
 
 ![*Screenshot here*](screen.png)
 ### Features
-* Build and install in parallel to all connected android devices and genymotion or run in iOS simulator.
+* Build and install in parallel to all connected devices and genymotion or run in iOS simulator. (iOS device install requires [libimobiledevice via homebrew](http://brewformulas.org/Libimobiledevice))
 * All build related information is pulled from cli setup and the project's tiapp.xml.
 * Use your favourite IDE for app development without sacrificing easy and fast access to Titanium CLI features.
 * Distribute your app to iOS and Android devices using a generated microsite
@@ -14,6 +14,16 @@ NodeJS Command-line tool for the Titanium CLI and ADB.
 
 ### Use TiMagic
 Run `timagic -h` for usage information.
+
+### For iOS Device Install
+Install Homebrew:
+```
+ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+```
+Install libimobiledevice:
+```
+brew install libimobiledevice
+```
 
 ### Development install
 1. Clone the repository to a local folder.
