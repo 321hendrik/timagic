@@ -1,6 +1,6 @@
 {
   "name": "timagic",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "A Simple UI for automation of the Titanium CLI and ADB",
   "main": "index.js",
   "repository": {
